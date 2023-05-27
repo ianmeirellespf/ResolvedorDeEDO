@@ -5,10 +5,13 @@ def euler_method(t0, tf, dt, x0, f):
     num_steps = int((tf - t0) / dt)
     t = np.linspace(t0, tf, num_steps)
     x = np.zeros_like(t)
+    v = np.zeros_like(t)
     x[0] = x0
+    v[0] = v0
 
     for i in range(1, num_steps):
-        x[i] = x[i-1] + dt * f(t[i-1], x[i-1])
+        v[i] = v[i-1] + dt * f(t[i-1], x[i-1])
+        x[i] = x[i-1] + dt * v[i-1]
     
     return t, x
 
@@ -70,11 +73,11 @@ x0 = 1.0  # posição inicial
 v0 = 0.0  # velocidade inicial
 
 # Resolvendo usando o método de Euler
-t_euler, x_euler = euler_method(t0, tf, dt, x0, lambda t, x: v0)
+t_euler, x_euler = euler_method(t0, tf, dt, x0, f)
 # Resolvendo usando o método de Verlet
 t_verlet, x_verlet = verlet_method(t0, tf, dt, x0, v0, f)
 # Resolvendo usando o método de Runge-Kutta
-t_rk4, x_rk4 = runge_kutta_method(t0, tf, dt, x0, lambda t, x: v0)
+t_rk4, x_rk4 = runge_kutta_method(t0, tf, dt, x0, f)
 # Resolvendo usando o método de Leapfrog
 t_leapfrog, x_leapfrog = leapfrog_method(t0, tf, dt, x0, v0, f)
 
