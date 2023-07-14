@@ -140,7 +140,8 @@ def g(t,v): #x'=g(t,v)
 def exact_solution(t, x0, v0):
     omega = np.sqrt(k / m)
     x = x0 * np.cos(omega * t) + v0 / omega * np.sin(omega * t)
-    return x
+    v = v0 * np.cos(omega * t) - (x0 * omega * np.sin(omega * t))
+    return x,v
 
 t0 = 0.0
 tf = 10.0
@@ -157,8 +158,8 @@ t_rk4, x_rk4, E_rk4 = runge_kutta_method(t0, tf, dt, x0, v0, f, g)
 t_leapfrog, x_leapfrog, E_leapfrog = leapfrog_method(t0, tf, dt, x0, v0, f)
 
 t_exact = np.linspace(t0, tf, int((tf - t0) / dt) + 1)
-x_exact = exact_solution(t_exact, x0, v0)
-E_exact = 0.5 * m * v0**2 + 0.5 * k * x_exact**2
+x_exact,v_exact = exact_solution(t_exact, x0, v0)
+E_exact = 0.5 * m * v_exact**2 + 0.5 * k * x_exact**2
 
 plt.plot(t_adams2, E_adams2, label='Adams-Bashforth 2nd order')
 plt.plot(t_adams3, E_adams3, label='Adams-Bashforth 3rd order')
