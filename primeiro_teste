@@ -34,11 +34,10 @@ def verlet_method(t0, tf, dt, x0, v0, f):
     v = np.zeros_like(t)
     x[0] = x0
     v[0] = v0
-
-    for i in range(1, num_steps):
-        x[i] = x[i-1] + dt * v[i-1] + 0.5 * dt**2 * f(t[i-1], x[i-1])
-        v[i] = v[i-1] + 0.5 * dt * (f(t[i-1], x[i-1]) + f(t[i], x[i]))
-    
+    x[1]=x[0]+v[0]*dt+0.5*f(t[0], x[0])*dt**2
+    for i in range(2, num_steps):
+        x[i] = 2*x[i-1] - x[i-2] + dt**2 * f(t[i-1], x[i-1])
+        
     return t, x
 
 def runge_kutta_method(t0, tf, dt, x0, v0, f, g):
@@ -108,8 +107,8 @@ t_leapfrog, x_leapfrog = leapfrog_method(t0, tf, dt, x0, v0, f)
 
 # Plotando os resultados
 plt.plot(t_euler_semi,x_euler_semi,color='black',label='euler semi-implicito')
-#plt.plot(t_euler, x_euler,color= 'green', label='Euler')
-#plt.plot(t_verlet, x_verlet,color= 'blue', label='Verlet')
+plt.plot(t_euler, x_euler,color= 'green', label='Euler')
+plt.plot(t_verlet, x_verlet,color= 'blue', label='Verlet')
 plt.plot(t_rk4, x_rk4,'m-.',color= 'red', label='Runge-Kutta')
 plt.plot(t_leapfrog, x_leapfrog,'m-.',color= 'magenta', label='Leapfrog')
 plt.xlabel('Tempo')
