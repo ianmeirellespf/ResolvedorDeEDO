@@ -19,6 +19,28 @@ def adams_bashforth2_method(t0, tf, dt, x0, v0, f, g):
         v[i]=v[i-1]+dt*(1.5*f(t[i-1],x[i-1])-0.5*f(t[i-2],x[i-2]))
         E[i] = 0.5 * m * v[i]**2 + 0.5 * k * x[i]**2
     return t,x,E
+
+def adams_bashforth3_method(t0, tf, dt, x0, v0, f, g):
+    num_steps = int((tf - t0) / dt)+1
+    t = np.linspace(t0, tf, num_steps)
+    x = np.zeros_like(t)
+    v = np.zeros_like(t)
+    E = np.zeros_like(t)
+    x[0] = x0
+    v[0] = v0
+    x[1]=x[0]+dt*g(t[0],v[0])
+    v[1]=v[0]+dt*f(t[0],x[0])
+    x[2]=x[1]+dt*(1.5*g(t[1],v[1])-0.5*g(t[0],v[0]))
+    v[2]=v[1]+dt*(1.5*f(t[1],x[1])-0.5*f(t[0],x[0]))
+    E[0] = 0.5 * m * v0**2 + 0.5 * k * x0**2
+    E[1] = 0.5 * m * v[1]**2 + 0.5 * k * x[1]**2
+    E[2] = 0.5 * m * v[2]**2 + 0.5 * k * x[2]**2
+    for i in range(3,num_steps):
+        x[i]=x[i-1]+dt*((23/12)*g(t[i-1],v[i-1])-(16/12)*g(t[i-2],v[i-2])+(5/12)*g(t[i-3],v[i-3]))
+        v[i]=v[i-1]+dt*((23/12)*f(t[i-1],x[i-1])-(16/12)*f(t[i-2],x[i-2])+(5/12)*f(t[i-3],x[i-3]))
+        E[i] = 0.5 * m * v[i]**2 + 0.5 * k * x[i]**2
+    return t,x,E
+
 def semi_implicit_euler_method(t0, tf, dt, x0, v0, f, g):
     num_steps = int((tf - t0) / dt)+1
     t = np.linspace(t0, tf, num_steps)
@@ -132,6 +154,8 @@ v0 = 0.0  # velocidade inicial
 
 # Resolvendo usando o método de Adams-Bashforth de segunda ordem
 t_adams2, x_adams2, E_adams2 =adams_bashforth2_method(t0, tf, dt, x0, v0, f, g)
+# Resolvendo usando o método de Adams-Bashforth de terceira ordem
+t_adams3, x_adams3, E_adams3 =adams_bashforth3_method(t0, tf, dt, x0, v0, f, g)
 # Resolvendo usando o método de Euler semi-implicito
 t_euler_semi, x_euler_semi, E_euler_semi = semi_implicit_euler_method(t0, tf, dt, x0, v0, f, g)
 # Resolvendo usando o método de Euler
@@ -144,12 +168,13 @@ t_rk4, x_rk4, E_rk4 = runge_kutta_method(t0, tf, dt, x0, v0, f, g)
 t_leapfrog, x_leapfrog, E_leapfrog = leapfrog_method(t0, tf, dt, x0, v0, f)
 
 # Plotando os resultados
-plt.plot(t_adams2,x_adams2,color='yellow', label='Adams-Bashforth 2º')
+plt.plot(t_adams2,E_adams2,color='yellow', label='Adams-Bashforth 2º')
+plt.plot(t_adams3,E_adams3,color='purple', label='Adams-Bashforth 3º')
 #plt.plot(t_euler_semi,x_euler_semi,color='black',label='euler semi-implicito')
 #plt.plot(t_euler, x_euler,color= 'green', label='Euler')
 #plt.plot(t_verlet, x_verlet,color= 'blue', label='Verlet')
-plt.plot(t_rk4, x_rk4,'m-.',color= 'red', label='Runge-Kutta')
-plt.plot(t_leapfrog, x_leapfrog,'m-.',color= 'magenta', label='Leapfrog')
+plt.plot(t_rk4, E_rk4,'m-.',color= 'red', label='Runge-Kutta')
+plt.plot(t_leapfrog, E_leapfrog,'m-.',color= 'magenta', label='Leapfrog')
 plt.xlabel('Tempo')
 plt.ylabel('Posição')
 plt.legend()
