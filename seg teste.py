@@ -109,6 +109,14 @@ def leapfrog_method(t0, tf, dt, x0, v0, f):
 
     return t, x, E
 
+# Função para calcular a solução exata da órbita
+def exact_solution(t, x0, v0):
+    omega = np.sqrt(G * m / np.linalg.norm(x0)**3)
+    x = np.zeros((len(t), 2))
+    for i in range(len(t)):
+        x[i] = x0 * np.cos(omega * t[i]) + v0 / omega * np.sin(omega * t[i])
+    return x
+
 # Parâmetros iniciais
 t0 = 0.0
 tf = 10.0
@@ -117,11 +125,16 @@ x0 = np.array([1.0, 0.0])
 v0 = np.array([0.0, 1.0])
 
 # Chamada das funções
+num_steps = int((tf - t0) / dt)
 t_verlet, x_verlet, E_verlet = verlet_method(t0, tf, dt, x0, v0, f)
 t_euler, x_euler, E_euler = euler_method(t0, tf, dt, x0, v0, f, g)
 t_semi_euler, x_semi_euler, E_semi_euler = semi_implicit_euler_method(t0, tf, dt, x0, v0, f, g)
 t_rk, x_rk, E_rk = runge_kutta_method(t0, tf, dt, x0, v0, f, g)
 t_leapfrog, x_leapfrog, E_leapfrog = leapfrog_method(t0, tf, dt, x0, v0, f)
+
+# Cálculo da solução exata
+t_exact = np.linspace(t0, tf, num_steps)
+x_exact = exact_solution(t_exact, x0, v0)
 
 # Plot dos resultados
 plt.figure(figsize=(12, 8))
@@ -131,6 +144,7 @@ plt.plot(x_euler[:, 0], x_euler[:, 1], label='Euler')
 plt.plot(x_semi_euler[:, 0], x_semi_euler[:, 1], label='Euler Semi-implícito')
 plt.plot(x_rk[:, 0], x_rk[:, 1], label='Runge-Kutta')
 plt.plot(x_leapfrog[:, 0], x_leapfrog[:, 1], label='Leapfrog')
+plt.plot(x_exact[:, 0], x_exact[:, 1], label='Solução Exata')
 plt.title('Órbita - Posição')
 plt.xlabel('x')
 plt.ylabel('y')
