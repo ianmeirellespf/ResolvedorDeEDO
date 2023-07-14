@@ -3,10 +3,11 @@ import matplotlib.pyplot as plt
 m=1
 k=1
 def semi_implicit_euler_method(t0, tf, dt, x0, v0, f, g):
-    num_steps = int((tf - t0) / dt)
+    num_steps = int((tf - t0) / dt)+1
     t = np.linspace(t0, tf, num_steps)
     x = np.zeros_like(t)
     v = np.zeros_like(t)
+    print(t)
     E = np.zeros_like(t)
     x[0] = x0
     v[0] = v0
@@ -18,7 +19,7 @@ def semi_implicit_euler_method(t0, tf, dt, x0, v0, f, g):
     return t, x, E     
 
 def euler_method(t0, tf, dt, x0, v0, f, g):
-    num_steps = int((tf - t0) / dt)
+    num_steps = int((tf - t0) / dt)+1
     t = np.linspace(t0, tf, num_steps)
     x = np.zeros_like(t)
     v = np.zeros_like(t)
@@ -35,24 +36,22 @@ def euler_method(t0, tf, dt, x0, v0, f, g):
     return t, x, E
 
 def verlet_method(t0, tf, dt, x0, v0, f):
-    num_steps = int((tf - t0) / dt)
+    num_steps = int((tf - t0) / dt)+1
     t = np.linspace(t0, tf, num_steps)
     x = np.zeros_like(t)
     v = np.zeros_like(t)
     E = np.zeros_like(t)
     x[0] = x0
     v[0] = v0
-    E[0] = 0.5 * m * v0**2 + 0.5 * k * x0**2
 
     for i in range(1, num_steps):
         x[i] = x[i-1] + dt * v[i-1] + 0.5 * dt**2 * f(t[i-1], x[i-1])
         v[i] = v[i-1] + 0.5 * dt * (f(t[i-1], x[i-1]) + f(t[i], x[i]))
-        E[i] = 0.5 * m * v[i]**2 + 0.5 * k * x[i]**2
     
-    return t, x, E
+    return t, x
 
 def runge_kutta_method(t0, tf, dt, x0, v0, f, g):
-    num_steps = int((tf - t0) / dt)
+    num_steps = int((tf - t0) / dt)+1
     t = np.linspace(t0, tf, num_steps)
     x = np.zeros_like(t)
     v = np.zeros_like(t)
@@ -78,7 +77,7 @@ def runge_kutta_method(t0, tf, dt, x0, v0, f, g):
     return t, x, E
 
 def leapfrog_method(t0, tf, dt, x0, v0, f):
-    num_steps = int((tf - t0) / dt)
+    num_steps = int((tf - t0) / dt)+1
     t = np.linspace(t0, tf, num_steps)
     x = np.zeros_like(t)
     v = np.zeros_like(t)
@@ -125,11 +124,11 @@ t_rk4, x_rk4, E_rk4 = runge_kutta_method(t0, tf, dt, x0, v0, f, g)
 t_leapfrog, x_leapfrog, E_leapfrog = leapfrog_method(t0, tf, dt, x0, v0, f)
 
 # Plotando os resultados
-plt.plot(t_euler_semi,E_euler_semi,color='black',label='euler semi-implicito')
-plt.plot(t_euler, E_euler,color= 'green', label='Euler')
-plt.plot(t_verlet, E_verlet,color= 'blue', label='Verlet')
-plt.plot(t_rk4, E_rk4,'m-.',color= 'red', label='Runge-Kutta')
-plt.plot(t_leapfrog, E_leapfrog,'m-.',color= 'magenta', label='Leapfrog')
+plt.plot(t_euler_semi,x_euler_semi,color='black',label='euler semi-implicito')
+#plt.plot(t_euler, x_euler,color= 'green', label='Euler')
+#plt.plot(t_verlet, x_verlet,color= 'blue', label='Verlet')
+plt.plot(t_rk4, x_rk4,'m-.',color= 'red', label='Runge-Kutta')
+plt.plot(t_leapfrog, x_leapfrog,'m-.',color= 'magenta', label='Leapfrog')
 plt.xlabel('Tempo')
 plt.ylabel('Posição')
 plt.legend()
