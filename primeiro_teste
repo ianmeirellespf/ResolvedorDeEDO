@@ -54,7 +54,7 @@ def semi_implicit_euler_method(t0, tf, dt, x0, v0, f, g):
     E[0] = 0.5 * m * v0**2 + 0.5 * k * x0**2
     for i in range(1, num_steps):
         v[i] = v[i-1] + dt * f(t[i-1], x[i-1])
-        x[i] = x[i-1] + dt * g(t[i], v[i])
+        x[i] = x[i-1] + dt * g(t[i-1], v[i-1])
         E[i] = 0.5 * m * v[i]**2 + 0.5 * k * x[i]**2
     return t, x, E
 
@@ -88,29 +88,6 @@ def verlet_method(t0, tf, dt, x0, v0, f):
         E[i] = 0.5 * m * v[i]**2 + 0.5 * k * x[i]**2
     return t, x, E
 
-def runge_kutta_method(t0, tf, dt, x0, v0, f, g):
-    num_steps = int((tf - t0) / dt) + 1
-    t = np.linspace(t0, tf, num_steps)
-    x = np.zeros_like(t)
-    v = np.zeros_like(t)
-    E = np.zeros_like(t)
-    x[0] = x0
-    v[0] = v0
-    E[0] = 0.5 * m * v0**2 + 0.5 * k * x0**2
-    for i in range(1, num_steps):
-        k11 = g(t[i-1], v[i-1])
-        k12 = f(t[i-1], x[i-1])
-        k21 = g(t[i-1] + 0.5*dt, v[i-1] + 0.5*k11*dt)
-        k22 = f(t[i-1] + 0.5*dt, x[i-1] + 0.5*k12*dt)
-        k31 = g(t[i-1] + 0.5*dt, v[i-1] + 0.5*k21*dt)
-        k32 = f(t[i-1] + 0.5*dt, x[i-1] + 0.5*k22*dt)
-        k41 = g(t[i-1] + dt, v[i-1] + k31*dt)
-        k42 = f(t[i-1] + dt, x[i-1] + k32*dt)
-        v[i] = v[i-1] + (k12 + 2*k22 + 2*k32 + k42) * dt / 6
-        x[i] = x[i-1] + (k11 + 2*k21 + 2*k31 + k41) * dt / 6
-        E[i] = 0.5 * m * v[i]**2 + 0.5 * k * x[i]**2
-    return t, x, E
-
 def leapfrog_method(t0, tf, dt, x0, v0, f):
     num_steps = int((tf - t0) / dt) + 1
     t = np.linspace(t0, tf, num_steps)
@@ -130,11 +107,10 @@ def leapfrog_method(t0, tf, dt, x0, v0, f):
 # Exemplo de EDO - Movimento Harmônico Simples
 def f(t, x): #v'= f(t,x)
     k = 1.0  # constante da mola
-   
-    return -k * x 
+    m = 1.0  # massa
+    return -k * x / m
 def g(t,v): #x'=g(t,v)
-    m=1
-    return v/m
+    return v
 
 def exact_solution(t, x0, v0):
     omega = np.sqrt(k / m)
@@ -142,6 +118,8 @@ def exact_solution(t, x0, v0):
     v = v0 * np.cos(omega * t) - (x0 * omega * np.sin(omega * t))
     return x,v
 
+
+#código separado para o modelo de runge-kutta
 def modelo_hamiltoniano(t, y):
     # Parâmetros do sistema
     k = 1.0  # Constante da mola
@@ -187,30 +165,31 @@ def runge_kutta4(t0, y0, h, num_pontos):
         energia[i] = calcular_energia(y[i])
 
     return t, y, energia
+#parametros gerais
+t = 10
 t0 = 0.0
+tf = 10.0
+dt = 0.01
 x0 = 1.0
+v0 = 0.0
+#parametros para runge-kutta
 p0 = 0.0
 y0 = np.array([x0, p0])
 
 t_inicio = 0.0
 t_fim = 10.0
-num_pontos = 100
+num_pontos = 1000
 h = (t_fim - t_inicio) / num_pontos
 
-t = 10
-t0 = 0.0
-tf = 100.0
-dt = 0.01
-x0 = 1.0
-v0 = 0.0
 
 t_adams2, x_adams2, E_adams2 = adams_bashforth2_method(t0, tf, dt, x0, v0, f, g)
 t_adams3, x_adams3, E_adams3 = adams_bashforth3_method(t0, tf, dt, x0, v0, f, g)
 t_euler_semi, x_euler_semi, E_euler_semi = semi_implicit_euler_method(t0, tf, dt, x0, v0, f, g)
 t_euler, x_euler, E_euler = euler_method(t0, tf, dt, x0, v0, f, g)
 t_verlet, x_verlet, E_verlet = verlet_method(t0, tf, dt, x0, v0, f)
-t, y, energia = runge_kutta4(t0, y0, h, num_pontos)
 t_leapfrog, x_leapfrog, E_leapfrog = leapfrog_method(t0, tf, dt, x0, v0, f)
+t_rk4, y, E_rk4 = runge_kutta4(t0, y0, h, num_pontos)
+x_rk4=y[:,0]
 
 t_exact = np.linspace(t0, tf, int((tf - t0) / dt) + 1)
 x_exact,v_exact = exact_solution(t_exact, x0, v0)
@@ -222,8 +201,7 @@ plt.plot(t_adams3, E_adams3,'crimson', label='Adams-Bashforth 3rd order')
 plt.plot(t_euler_semi, E_euler_semi,'darkgreen', label='Euler Semi-implicit')
 plt.plot(t_euler, E_euler,'lime', label='Euler')
 plt.plot(t_verlet, E_verlet,'aqua', label='Verlet')
-#plt.plot(t, y[:, 0], '--', color='fuchsia', label='Runge-Kutta')
-plt.plot(t, energia, '--', color='fuchsia', label='Runge-Kutta')
+plt.plot(t_rk4, E_rk4, '--', color='fuchsia', label='Runge-Kutta')
 plt.plot(t_leapfrog, E_leapfrog,'b--' , label='Leapfrog')
 plt.plot(t_exact, E_exact,'black' , label='Exact Solution')
 plt.xlabel('Time')
