@@ -130,10 +130,11 @@ def leapfrog_method(t0, tf, dt, x0, v0, f):
 # Exemplo de EDO - Movimento Harmônico Simples
 def f(t, x): #v'= f(t,x)
     k = 1.0  # constante da mola
-    m = 1.0  # massa
-    return -k * x / m
+   
+    return -k * x 
 def g(t,v): #x'=g(t,v)
-    return v
+    m=1
+    return v/m
 
 def exact_solution(t, x0, v0):
     omega = np.sqrt(k / m)
@@ -142,7 +143,7 @@ def exact_solution(t, x0, v0):
     return x,v
 
 t0 = 0.0
-tf = 10.0
+tf = 100.0
 dt = 0.01
 x0 = 1.0
 v0 = 0.0
@@ -160,14 +161,14 @@ x_exact,v_exact = exact_solution(t_exact, x0, v0)
 E_exact = 0.5 * m * v_exact**2 + 0.5 * k * x_exact**2
 
 
-plt.plot(t_adams2, E_adams2, label='Adams-Bashforth 2nd order')
-plt.plot(t_adams3, E_adams3,'-.', label='Adams-Bashforth 3rd order')
-plt.plot(t_euler_semi, E_euler_semi,'--', label='Euler Semi-implicit')
-plt.plot(t_euler, E_euler, label='Euler')
-plt.plot(t_verlet, E_verlet,'--', label='Verlet')
-plt.plot(t_rk4, E_rk4,'--', label='Runge-Kutta')
-plt.plot(t_leapfrog, E_leapfrog,'-.', label='Leapfrog')
-plt.plot(t_exact, E_exact,':', label='Exact Solution')
+plt.plot(t_adams2, x_adams2, label='Adams-Bashforth 2nd order')
+plt.plot(t_adams3, x_adams3,'-.', label='Adams-Bashforth 3rd order')
+plt.plot(t_euler_semi, x_euler_semi,'--', label='Euler Semi-implicit')
+plt.plot(t_euler, x_euler, label='Euler')
+plt.plot(t_verlet, x_verlet,'--', label='Verlet')
+plt.plot(t_rk4, x_rk4,'--', label='Runge-Kutta')
+plt.plot(t_leapfrog, x_leapfrog,'-.', label='Leapfrog')
+plt.plot(t_exact, x_exact,':', label='Exact Solution')
 plt.xlabel('Time')
 plt.ylabel('Total Energy')
 plt.legend()
