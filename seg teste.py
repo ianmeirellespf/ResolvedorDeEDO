@@ -77,16 +77,16 @@ def runge_kutta_method(t0, tf, dt, x0, v0, f, g):
     E[0] = 0.5 * m * np.linalg.norm(v0)**2 - G * m / np.linalg.norm(x0)
 
     for i in range(1, num_steps):
-        k11 = g(t[i], v[i-1])
-        k12 = f(t[i], x[i-1])
-        k21 = g(t[i] + 0.5*dt, v[i-1] + 0.5*k11*dt)
-        k22 = f(t[i] + 0.5*dt, x[i-1] + 0.5*k12*dt)
-        k31 = g(t[i] + 0.5*dt, v[i-1] + 0.5*k21*dt)
-        k32 = f(t[i] + 0.5*dt, x[i-1] + 0.5*k22*dt)
-        k41 = g(t[i] + dt, v[i-1] + k31*dt)
-        k42 = f(t[i] + dt, x[i-1] + k32*dt)
-        v[i] = v[i-1] + (k12 + 2*k22 + 2*k32 + k42)*dt / 6
-        x[i] = x[i-1] + (k11 + 2*k21 + 2*k31 + k41)*dt / 6
+        k11 = dt*g(t[i-1], v[i-1])
+        k12 = dt*f(t[i-1], x[i-1])
+        k21 = dt*g(t[i-1] + 0.5*dt, v[i-1] + 0.5*k11)
+        k22 = dt*f(t[i-1] + 0.5*dt, x[i-1] + 0.5*k12)
+        k31 = dt*g(t[i-1] + 0.5*dt, v[i-1] + 0.5*k21)
+        k32 = dt*f(t[i-1] + 0.5*dt, x[i-1] + 0.5*k22)
+        k41 = dt*g(t[i-1] + dt, v[i-1] + k31)
+        k42 = dt*f(t[i-1] + dt, x[i-1] + k32)
+        v[i] = v[i-1] + (k12 + 2*k22 + 2*k32 + k42) / 6
+        x[i] = x[i-1] + (k11 + 2*k21 + 2*k31 + k41)  / 6
         E[i] = 0.5 * m * np.linalg.norm(v[i])**2 - G * m / np.linalg.norm(x[i])
 
     return t, x, E
@@ -144,7 +144,7 @@ def exact_solution(t, x0, v0):
 # Parâmetros iniciais
 t0 = 0.0
 tf = 10.0
-dt = 0.01
+dt = 0.001
 x0 = np.array([1.0, 0.0])
 v0 = np.array([0.0, 1.0])
 
@@ -165,12 +165,12 @@ E_exact = 0.5 * m * np.linalg.norm(v0)**2 - G * m / np.linalg.norm(x_exact, axis
 plt.figure(figsize=(12, 8))
 plt.subplot(2, 2, 1)
 plt.plot(x_verlet[:, 0], x_verlet[:, 1],'r', label='Verlet')
-plt.plot(x_euler[:, 0], x_euler[:, 1],'crimson', label='Euler')
-plt.plot(x_semi_euler[:, 0], x_semi_euler[:, 1],'darkgreen', label='Euler Semi-implícito')
+#plt.plot(x_euler[:, 0], x_euler[:, 1],'crimson', label='Euler')
+#plt.plot(x_semi_euler[:, 0], x_semi_euler[:, 1],'darkgreen', label='Euler Semi-implícito')
 plt.plot(x_rk[:, 0], x_rk[:, 1],'lime', label='Runge-Kutta')
-plt.plot(x_leapfrog[:, 0], x_leapfrog[:, 1],'b--', label='Leapfrog')
-plt.plot(x_adams3[:, 0], x_adams3[:, 1],'fuchsia', label='Adams-Bashforth 3rd order')
-plt.plot(x_exact[:, 0], x_exact[:, 1],'black' ,label='Solução Exata')
+#plt.plot(x_leapfrog[:, 0], x_leapfrog[:, 1],'b--', label='Leapfrog')
+#plt.plot(x_adams3[:, 0], x_adams3[:, 1],'fuchsia', label='Adams-Bashforth 3rd order')
+#plt.plot(x_exact[:, 0], x_exact[:, 1],'black' ,label='Solução Exata')
 plt.title('Órbita - Posição')
 plt.xlabel('x')
 plt.ylabel('y')

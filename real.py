@@ -80,7 +80,7 @@ plt.show()
 
 # Plotagem da energia ao longo do tempo
 plt.figure(figsize=(10, 6))
-plt.plot(t, energia)
+plt.plot(t, y)
 plt.xlabel('Tempo')
 plt.ylabel('Energia')
 plt.title('Energia do Sistema Hamiltoniano de Segunda Ordem')
