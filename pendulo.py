@@ -174,4 +174,3 @@ plt.xlabel('Time')
 plt.ylabel('Total Energy')
 plt.legend()
 plt.show()
-
